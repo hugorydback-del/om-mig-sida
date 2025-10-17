@@ -1,0 +1,147 @@
+#migbody {
+    background: linear-gradient(180deg, #eae3d2 0%, #f9f6ef 100%);
+    background-repeat: no-repeat;
+    color: #2b2b2b;
+    font-family: "Segoe UI", Arial, sans-serif;
+    text-align: center; 
+}
+#vännerbody {
+    background-color: #000;
+}
+h1 {
+    background-color: #b02c23;
+    color: #fff;
+    padding: 20px; 
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid #892622; 
+}
+.intro-text { 
+    font-size: 26px;
+    margin-top: 32px;
+    font-style: italic; 
+}
+.brevid-bilden {
+    border: 2px solid #000;
+    border-radius: 16px;
+    padding: 2%;                   
+    width: 32%;              
+    background-color: #fff;    
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+.profile-image {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    margin-top: 32px;
+    border: 3px solid #000;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease;
+}
+.profile-image:hover {
+    transform: scale(1.1);
+}
+.link-section {
+    margin-top: 40px;
+}
+.link {
+    display: inline-block;
+    margin: 8px;
+    padding: 8px 16px;
+    background-color: #892622;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.25s ease;
+}
+.link:hover {
+    background-color: #b02c23;
+}
+h2 {
+    background-color: rgb(0, 172, 252);
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+}
+.profile-image2 {
+    width: 600px;
+    height: 400px;
+}
+.link3 {
+    display: inline-block;
+    margin: 8px;
+    padding: 8px 16px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.25s ease;
+}
+.brevid-bilden2 {
+    border: 2px solid #000;   
+    border-radius: 16px;            
+    padding: 2%;                   
+    width: 40%;              
+    background-color: #fff;    
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    margin-left: 53%;
+}
+#intressenbody {
+    background-color: #c5cba4; 
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: #222;
+    text-align: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+h3 {
+    background-color: #556b2f;
+    color: #fff;
+    padding: 16px;
+    margin-top: 0;
+    letter-spacing: 1px;
+}
+.intresse-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+    padding: 16px;
+}
+.intresse {
+    background-color: #f9f6ef;
+    border: 2px solid #2f2f2f;
+    border-radius: 12px;
+    width: 300px;
+    padding: 16px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    transition: transform 0.25s ease;
+}
+.intresse:hover {
+    transform: scale(1.02);
+}
+.intresse-bild {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.intresse-text {
+    font-size: 16px;
+    margin-top: 8px;
+    font-style: italic;
+}
+.link4 {
+    display: inline-block;
+    margin: 8px;
+    padding: 8px 16px;
+    background-color: #000;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.25s ease;
+}

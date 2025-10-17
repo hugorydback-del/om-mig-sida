@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bildregn — testa IMG_4540.JPG</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background: linear-gradient(180deg,#0b1220,#0f172a);
+      color: #e6eef8;
+      margin: 0;
+      min-height: 100vh;
+      padding: 30px;
+      box-sizing: border-box;
+    }
+    .card {
+      max-width: 920px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.06);
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 8px 30px rgba(2,6,23,0.6);
+    }
+    h1 { margin: 6px 0 8px; font-size: 20px; color: #fff; }
+    p { margin: 0 0 12px; color:#bcd0ea; }
+
+    .controls { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:12px;}
+    button, label.button-like {
+      background:#2563eb; color:white; border:0; padding:10px 14px; border-radius:10px;
+      cursor:pointer; font-weight:600;
+    }
+    button.secondary { background:#64748b; }
+    .file-input { display:none; }
+
+    .namnLista { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:10px; }
+    .namnLista button { background:#1f2937; color:#e6eef8; padding:8px 12px; border-radius:8px; border:1px solid rgba(255,255,255,0.04); }
+
+    #status { color:#ffd6d6; margin-top:8px; min-height:18px; }
+
+    /* falling images */
+    .falling {
+      position: fixed;
+      top: -150px;
+      pointer-events: none;
+      z-index: 9999;
+      will-change: transform, opacity;
+      border-radius:6px;
+      box-shadow: 0 8px 20px rgba(2,6,23,0.6);
+    }
+    @keyframes fall {
+      to { transform: translateY(120vh) rotate(360deg); opacity:0.85; }
+    }
+
+    .controls-row { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+    .checkbox { display:inline-flex; gap:6px; align-items:center; color:#cbd5e1; }
+    .small { font-size:13px; color:#cbd5e1; }
+    #preview { margin-top:12px; color:#cbd5e1; }
+    img.preview-img { max-width:160px; border-radius:8px; display:block; margin:8px auto; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Bildregn — klicka på namnet</h1>
+    <p>Klicka på ett namn för att starta regn av den bilden. Om du har `IMG_4540.JPG` i samma mapp kan du använda "Bild 1".</p>
+
+    <div class="namnLista">
+      <!-- Lokal fil (samma mapp som index.html) -->
+      <button class="name-btn" data-src="IMG_4540.JPG">Bild 1 (lokal: IMG_4540.JPG)</button>
+
+      <!-- Extern bild som exempel -->
+      <button class="name-btn" data-src="https://picsum.photos/id/1025/200/150">Bild 2 (web)</button>
+
+      <!-- Ladda upp-knapp -->
+      <label class="button-like">
+        Ladda upp...
+        <input id="fileInput" class="file-input" type="file" accept="image/*" />
+      </label>
+    </div>
+
+    <div class="controls-row">
+      <label class="checkbox"><input id="infinite" type="checkbox"> <span class="small">Oändligt regn</span></label>
+      <button id="stopBtn" class="secondary">Stoppa regn</button>
+    </div>
+
+    <div id="status" aria-live="polite"></div>
+    <div id="preview"></div>
+  </div>
+
+  <script>
+    (function () {
+      const nameBtns = document.querySelectorAll('.name-btn');
+      const fileInput = document.getElementById('fileInput');
+      const infiniteChk = document.getElementById('infinite');
+      const stopBtn = document.getElementById('stopBtn');
+      const status = document.getElementById('status');
+      const preview = document.getElementById('preview');
+
+      let uploadedSrc = null;
+      let rainInterval = null;
+      let activeTimeouts = [];
+
+      // Utility: preload image (promise)
+      function preload(src) {
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.onload = () => resolve(src);
+          img.onerror = () => reject(src);
+          img.src = src;
+        });
+      }
+
+      // skapa en fallande bild
+      function createFalling(src) {
+        const el = document.createElement('img');
+        el.src = src;
+        el.className = 'falling';
+
+        // slumpmässig horisontell start
+        const left = Math.random() * (window.innerWidth - 30);
+        const size = 24 + Math.random() * 72; // 24–96 px
+        el.style.left = left + 'px';
+        el.style.width = size + 'px';
+
+        // slumpad duration och delay
+        const dur = 3 + Math.random() * 4; // 3–7s
+        const delay = Math.random() * 0.6;
+        el.style.animation = `fall ${dur}s linear ${delay}s forwards`;
+        el.style.opacity = 0.95;
+
+        document.body.appendChild(el);
+
+        // ta bort när animation är klart
+        el.addEventListener('animationend', () => el.remove());
+      }
+
+      // starta burst eller continuous regn
+      function startRainBurst(src, count = 25) {
+        stopRain(); // säkerställer inga gamla timers
+        status.textContent = `Startar regn of ${count} bilder...`;
+        for (let i = 0; i < count; i++) {
+          const t = setTimeout(() => createFalling(src), i * 80 + Math.random() * 200);
+          activeTimeouts.push(t);
+        }
+        // rensa timeouts efter max tid
+        const clearT = setTimeout(() => {
+          activeTimeouts = activeTimeouts.filter(t => t !== null);
+          status.textContent = '';
+        }, 9000);
+        activeTimeouts.push(clearT);
+      }
+
+      function startContinuous(src, intervalMs = 160) {
+        stopRain();
+        status.textContent = 'Oändligt regn igång — klicka "Stoppa regn" för att avsluta.';
+        rainInterval = setInterval(() => createFalling(src), intervalMs);
+      }
+
+      function stopRain() {
+        if (rainInterval) {
+          clearInterval(rainInterval);
+          rainInterval = null;
+        }
+        if (activeTimeouts.length) {
+          activeTimeouts.forEach(t => clearTimeout(t));
+          activeTimeouts = [];
+        }
+        status.textContent = '';
+      }
+
+      // Hantera klick på namnknappar
+      nameBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          // välj källa: uploadedSrc (om definierad) eller knappen data-src
+          const definedSrc = btn.dataset.src;
+          const srcToTry = uploadedSrc || definedSrc;
+
+          if (!srcToTry) {
+            status.textContent = 'Ingen bildkälla hittad — ladda upp eller kontrollera sökväg.';
+            return;
+          }
+
+          // kontrollera att bilden går att ladda
+          preload(srcToTry)
+            .then(() => {
+              if (infiniteChk.checked) {
+                startContinuous(srcToTry);
+              } else {
+                startRainBurst(srcToTry, 36);
+              }
+            })
+            .catch(() => {
+              status.textContent = `Kunde inte ladda bilden: ${srcToTry}. Kontrollera filnamn/sökväg (OBS: versaler spelar roll på vissa servrar).`;
+              console.warn('Bild kunde inte laddas:', srcToTry);
+            });
+        });
+      });
+
+      // Ladda upp från datorn
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        // använd Object URL så vi inte behöver ladda upp till server
+        if (uploadedSrc) URL.revokeObjectURL(uploadedSrc);
+        uploadedSrc = URL.createObjectURL(file);
+
+        // visa preview och lägg till en knapp (visuell feedback)
+        preview.innerHTML = `<div class="small">Uppladdad: ${file.name}</div><img class="preview-img" src="${uploadedSrc}" alt="${file.name}">`;
+        status.textContent = 'Uppladdad fil redo — klicka på någon namnknapp för att använda den (först i ordningen används uppladdad fil).';
+        console.log('uploadedSrc =', uploadedSrc);
+      });
+
+      // Stop-knapp
+      stopBtn.addEventListener('click', () => {
+        stopRain();
+        status.textContent = 'Regnet stoppat.';
+      });
+
+      // Tips-text för användaren
+      status.textContent = 'Tips: lägg IMG_4540.JPG i samma mapp som den här filen eller använd "Ladda upp..."';
+    })();
+  </script>
+</body>
+</ht
+
+
+

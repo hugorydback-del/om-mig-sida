@@ -1,0 +1,26 @@
+body{
+    
+    background-color:maroon;
+    background-position: center 10%;
+    
+}
+    
+h1 {
+    color:rgb(138, 18, 18) (255, 255, 255);
+     font-size:xx-large; 
+     text-align:center;
+    font-style: oblique;
+    margin-top: 5%;
+}
+
+#button1 {
+    background-color: maroon;
+    font-size: larger;  
+}
+
+.image1 {
+    width: 520px;
+    height: 500px;
+    align-self: center;
+}
+    
